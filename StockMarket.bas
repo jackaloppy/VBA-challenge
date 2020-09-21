@@ -4,6 +4,8 @@ Sub StockMarket()
     Dim rowi As Long
     Dim rowlen As Long
     Dim combined_row As Long
+    Dim open_price As Double
+    Dim close_price As Double
     
     Sheets.Add(bEFORE:=Sheets(1)).Name = "Combined_Data"
     Set combined_sheet = Worksheets("Combined_Data")
@@ -19,9 +21,21 @@ Sub StockMarket()
         If ws.Name <> "Combined_Data" Then
             rowlen = ws.Cells(rows.Count, 1).End(xlUp).Row
             For rowi = 1 To rowlen
-                If ws.Cells(rowi, 1).Value <> ws.Cells(rowi + 1, 1) And IsEmpty(ws.Cells(rowi + 1, 1).Value) = False Then
-                    combined_sheet.Cells(combined_row, 1) = ws.Cells(rowi + 1, 1)
-                    combined_row = combined_row + 1
+                If ws.Cells(rowi, 1).Value <> ws.Cells(rowi + 1, 1) Then
+                    If IsEmpty(ws.Cells(rowi + 1, 1)) = False Then
+                        combined_sheet.Cells(combined_row, 1) = ws.Cells(rowi + 1, 1)
+                    End If
+                    
+                    If Right(ws.Cells(rowi, 2).Value, 4) = "1230" Then
+                        close_price = ws.Cells(rowi, 6).Value
+                        combined_sheet.Cells(combined_row - 1, 2) = close_price - open_price
+                    End If
+                    
+                    If Right(ws.Cells(rowi + 1, 2).Value, 4) = "0101" Then
+                        open_price = ws.Cells(rowi + 1, 3).Value
+                        combined_row = combined_row + 1
+                    End If
+    
                 End If
             Next rowi
         End If
