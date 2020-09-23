@@ -10,16 +10,26 @@ Sub StockMarket()
     Dim volume As Long
     Dim openzeroi As Long
     Dim closezeroi As Long
+    Dim maxpercent As Double
+    Dim minpercent As Double
+    Dim maxv As Double
     
-
     For Each ws In Worksheets:
         ws.Cells(1, 9).Value = "Ticker"
         ws.Cells(1, 10).Value = "Yearly Change"
         ws.Cells(1, 11).Value = "Percent Change"
         ws.Cells(1, 12).Value = "Total Stock Volume"
-
+        ws.Cells(1, 16).Value = "Ticker"
+        ws.Cells(1, 17).Value = "Value"
+        ws.Cells(2, 15).Value = "Greatest % Increase"
+        ws.Cells(3, 15).Value = "Greatest % Decrease"
+        ws.Cells(4, 15).Value = "Greatest Total Volume"
+        
         output_row = 2
         rowlen = ws.Cells(Rows.Count, 1).End(xlUp).Row
+        maxpercent = 0
+        minpercent = 0
+        maxv = 0
         
         For rowi = 1 To rowlen
             If ws.Cells(rowi, 1).Value <> ws.Cells(rowi + 1, 1) Then
@@ -53,6 +63,26 @@ Sub StockMarket()
                         
                         ws.Cells(output_row - 1, 11).Value = (close_price - open_price) / open_price
                         ws.Cells(output_row - 1, 11).NumberFormat = "0.00%"
+                        If maxpercent <= ws.Cells(output_row - 1, 11).Value Then
+                            maxpercent = ws.Cells(output_row - 1, 11).Value
+                            ws.Cells(2, 17).Value = maxpercent
+                            ws.Cells(2, 17).NumberFormat = "0.00%"
+                            ws.Cells(2, 16).Value = ws.Cells(output_row - 1, 9).Value
+                        End If
+                        
+                        If minpercent >= ws.Cells(output_row - 1, 11).Value Then
+                            minpercent = ws.Cells(output_row - 1, 11).Value
+                            ws.Cells(3, 17).Value = minpercent
+                            ws.Cells(3, 17).NumberFormat = "0.00%"
+                            ws.Cells(3, 16).Value = ws.Cells(output_row - 1, 9).Value
+                        End If
+                        
+                        If maxv <= ws.Cells(output_row - 1, 12).Value Then
+                            maxv = ws.Cells(output_row - 1, 12).Value
+                            ws.Cells(4, 17).Value = maxv
+                            ws.Cells(4, 16).Value = ws.Cells(output_row - 1, 9).Value
+                        End If
+                            
                     Else
                         ws.Cells(output_row - 1, 10).Value = "NA"
                         ws.Cells(output_row - 1, 11).Value = "NA"
@@ -72,7 +102,6 @@ Sub StockMarket()
                         End If
                     Next openzeroi
                 End If
-        
                 output_row = output_row + 1
             Else
                volume = ws.Cells(rowi + 1, 7).Value
@@ -83,4 +112,3 @@ Sub StockMarket()
     Next
             
 End Sub
-

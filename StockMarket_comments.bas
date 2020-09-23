@@ -10,17 +10,27 @@ Sub StockMarket()
     Dim volume As Long
     Dim openzeroi As Long
     Dim closezeroi As Long
+    Dim maxpercent As Double
+    Dim minpercent As Double
+    Dim maxv As Double
     
-
     For Each ws In Worksheets:
         'Add header to each worksheet
         ws.Cells(1, 9).Value = "Ticker"
         ws.Cells(1, 10).Value = "Yearly Change"
         ws.Cells(1, 11).Value = "Percent Change"
         ws.Cells(1, 12).Value = "Total Stock Volume"
-
+        ws.Cells(1, 16).Value = "Ticker"
+        ws.Cells(1, 17).Value = "Value"
+        ws.Cells(2, 15).Value = "Greatest % Increase"
+        ws.Cells(3, 15).Value = "Greatest % Decrease"
+        ws.Cells(4, 15).Value = "Greatest Total Volume"
+        
         output_row = 2
         rowlen = ws.Cells(Rows.Count, 1).End(xlUp).Row
+        maxpercent = 0
+        minpercent = 0
+        maxv = 0
         
         For rowi = 1 To rowlen
             'Find the begining and the end of one stock based on ticker name
@@ -66,6 +76,30 @@ Sub StockMarket()
                         
                         ws.Cells(output_row - 1, 11).Value = (close_price - open_price) / open_price
                         ws.Cells(output_row - 1, 11).NumberFormat = "0.00%"
+                        'The following three if statements are used to generate the maximum
+                        'percentage, the minimum percentage, and the maximum total volume
+                        'note that total v should be dimed as double because long won't
+                        'hold up this large value.
+                        If maxpercent <= ws.Cells(output_row - 1, 11).Value Then
+                            maxpercent = ws.Cells(output_row - 1, 11).Value
+                            ws.Cells(2, 17).Value = maxpercent
+                            ws.Cells(2, 17).NumberFormat = "0.00%"
+                            ws.Cells(2, 16).Value = ws.Cells(output_row - 1, 9).Value
+                        End If
+                        
+                        If minpercent >= ws.Cells(output_row - 1, 11).Value Then
+                            minpercent = ws.Cells(output_row - 1, 11).Value
+                            ws.Cells(3, 17).Value = minpercent
+                            ws.Cells(3, 17).NumberFormat = "0.00%"
+                            ws.Cells(3, 16).Value = ws.Cells(output_row - 1, 9).Value
+                        End If
+                        
+                        If maxv <= ws.Cells(output_row - 1, 12).Value Then
+                            maxv = ws.Cells(output_row - 1, 12).Value
+                            ws.Cells(4, 17).Value = maxv
+                            ws.Cells(4, 16).Value = ws.Cells(output_row - 1, 9).Value
+                        End If
+                            
                     'If open price or close price is 0, then output NA
                     Else
                         ws.Cells(output_row - 1, 10).Value = "NA"
